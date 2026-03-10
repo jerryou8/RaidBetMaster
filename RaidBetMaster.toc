@@ -1,0 +1,16 @@
+## Interface: 11403
+## Title: Raid Bet Master
+## Notes: Classic Raid Betting AddOn
+## Version: 1.0.0
+## Author: YourName
+## SavedVariables: RaidBetMasterDB
+
+Core.lua
+UI.lua
+Bets.lua
+Session.lua
+Loot.lua
+Trade.lua
+GoldTracker.lua
+History.lua
+Config.lua
