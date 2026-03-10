@@ -1,5 +1,11 @@
-Loot = {}
+-- Loot.lua
+local Loot = {}
 
-function Loot:RecordLoot(player, item, amount)
-    -- 可解析 CHAT_MSG_LOOT 消息
+function Loot:ProcessDroppedItems(bossLoot)
+    if RaidBetMaster.Bets then
+        RaidBetMaster.Bets:FinalizeBets(bossLoot)
+    end
+    -- 可扩展：记录掉落金币、卖装备收益
 end
+
+RaidBetMaster.Loot = Loot
