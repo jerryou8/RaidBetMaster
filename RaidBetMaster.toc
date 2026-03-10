@@ -14,3 +14,4 @@ Trade.lua
 GoldTracker.lua
 History.lua
 Config.lua
+Disclaimer.lua
