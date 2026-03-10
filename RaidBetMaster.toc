@@ -2,7 +2,7 @@
 ## Title: Raid Bet Master
 ## Notes: Classic Raid Betting AddOn
 ## Version: 1.0.0
-## Author: YourName
+## Author: jerry
 ## SavedVariables: RaidBetMasterDB
 
 Core.lua
