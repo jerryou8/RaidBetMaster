@@ -1,35 +1,55 @@
-local RBM = CreateFrame("Frame")
-RBM:RegisterEvent("PLAYER_LOGIN")
-RBM:RegisterEvent("PLAYER_ENTERING_WORLD")
-RBM:RegisterEvent("CHAT_MSG_MONEY")
-RBM:RegisterEvent("CHAT_MSG_LOOT")
-RBM:RegisterEvent("MERCHANT_SHOW")
-RBM:RegisterEvent("TRADE_SHOW")
-RBM:RegisterEvent("TRADE_ACCEPT_UPDATE")
-RBM:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+-- Core.lua
+local Core = {}
 
-RBM:SetScript("OnEvent", function(self, event, ...)
-    if event == "PLAYER_LOGIN" then
-        if not RaidBetMasterDB then
-            RaidBetMasterDB = {
-                sessions = {},
-                config = {
-                    defaultOdds = 10,
-                    defaultBet = 100,
-                    defaultTimer = 30,
-                    maxHistory = 10
-                }
-            }
-        end
+local function ShowDisclaimer()
+    if RaidBetMasterDB and RaidBetMasterDB.disclaimerAccepted then
+        return
     end
-    if Session and Session.HandleEvent then
-        Session:HandleEvent(event, ...)
-    end
+
+    local f = CreateFrame("Frame", "RBM_DisclaimerFrame", UIParent, "BasicFrameTemplateWithInset")
+    f:SetSize(400, 200)
+    f:SetPoint("CENTER")
+    f:SetMovable(true)
+    f:EnableMouse(true)
+    f:RegisterForDrag("LeftButton")
+    f:SetScript("OnDragStart", f.StartMoving)
+    f:SetScript("OnDragStop", f.StopMovingOrSizing)
+
+    f.title = f:CreateFontString(nil, "OVERLAY")
+    f.title:SetFontObject("GameFontHighlight")
+    f.title:SetPoint("TOP", f, "TOP", 0, -10)
+    f.title:SetText("Raid Bet Master 使用免责声明")
+
+    f.text = f:CreateFontString(nil, "OVERLAY")
+    f.text:SetFontObject("GameFontNormal")
+    f.text:SetPoint("TOPLEFT", f, "TOPLEFT", 15, -40)
+    f.text:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -15, 50)
+    f.text:SetJustifyH("LEFT")
+    f.text:SetText(
+        "• 本插件仅用于记录游戏内行为，不涉及现实货币交易。\n" ..
+        "• 所有下注和金币收益风险由玩家自行承担。\n" ..
+        "• 插件不会自动交易或修改游戏客户端。\n\n" ..
+        "使用插件表示您已同意以上条款。"
+    )
+
+    local btn = CreateFrame("Button", nil, f, "GameMenuButtonTemplate")
+    btn:SetPoint("BOTTOM", f, "BOTTOM", 0, 20)
+    btn:SetSize(120, 30)
+    btn:SetText("我同意")
+    btn:SetNormalFontObject("GameFontNormal")
+    btn:SetHighlightFontObject("GameFontHighlight")
+    btn:SetScript("OnClick", function()
+        if not RaidBetMasterDB then RaidBetMasterDB = {} end
+        RaidBetMasterDB.disclaimerAccepted = true
+        f:Hide()
+    end)
+end
+
+-- PLAYER_LOGIN 初始化
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("PLAYER_LOGIN")
+frame:SetScript("OnEvent", function(self, event, ...)
+    ShowDisclaimer()
 end)
 
-SLASH_RBM1 = "/rbm"
-SlashCmdList["RBM"] = function(msg)
-    if UI and UI.ShowMainFrame then
-        UI:ShowMainFrame()
-    end
-end
+RaidBetMaster.Core = Core
