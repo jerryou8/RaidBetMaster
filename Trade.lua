@@ -1,5 +1,8 @@
 -- Trade.lua
-local Trade = {}
+
+local RBM = RaidBetMaster
+RBM.Trade = {}
+local Trade = RBM.Trade
 
 -- 当前交易对象临时缓存
 Trade.currentTrade = {
@@ -8,39 +11,47 @@ Trade.currentTrade = {
     goldReceived = 0
 }
 
--- 监听交易开始事件
+-- 交易打开
 function Trade:OnTradeShow()
-    local targetName = UnitName("NPC")
+    local targetName = UnitName("NPC") or UnitName("target")
     if targetName then
-        Trade.currentTrade.partner = targetName
-        Trade.currentTrade.goldGiven = 0
-        Trade.currentTrade.goldReceived = 0
+        self.currentTrade.partner = targetName
+        self.currentTrade.goldGiven = 0
+        self.currentTrade.goldReceived = 0
     end
 end
 
--- 监听交易金额变化
+-- 交易金额变化
 function Trade:OnTradeMoneyChanged()
+    if not self.currentTrade.partner then return end
     -- 玩家给对方的金币
-    Trade.currentTrade.goldGiven = GetPlayerTradeMoney()
+    self.currentTrade.goldGiven = GetPlayerTradeMoney() or 0
     -- 对方给玩家的金币
-    Trade.currentTrade.goldReceived = GetTargetTradeMoney()
+    self.currentTrade.goldReceived = GetTargetTradeMoney() or 0
 end
 
 -- 完成交易时记录下注
 function Trade:OnTradeAcceptUpdate(_, accepted1, accepted2)
     if accepted1 and accepted2 then
-        local player = Trade.currentTrade.partner
-        local gold = Trade.currentTrade.goldReceived or 0
+        local player = self.currentTrade.partner
+        local gold = self.currentTrade.goldReceived or 0
+
         if player and gold > 0 then
-            -- 尝试与 Bets 模块匹配
-            if RaidBetMaster.Bets then
-                RaidBetMaster.Bets:AddBet(player, nil, gold)
+            -- 这里不传装备，由聊天贴装备分配
+            if RBM.Bets then
+                RBM.Bets:AddBet(player, nil, gold)
+            end
+            -- 统计金币收入
+            if RBM.GoldTracker then
+                RBM.GoldTracker:RecordGoldChange(gold, "BetIncome")
             end
         end
     end
-    Trade.currentTrade.goldGiven = 0
-    Trade.currentTrade.goldReceived = 0
-    Trade.currentTrade.partner = nil
+
+    -- 清空缓存
+    self.currentTrade.partner = nil
+    self.currentTrade.goldGiven = 0
+    self.currentTrade.goldReceived = 0
 end
 
 -- 注册事件
@@ -48,6 +59,7 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("TRADE_SHOW")
 frame:RegisterEvent("TRADE_MONEY_CHANGED")
 frame:RegisterEvent("TRADE_ACCEPT_UPDATE")
+
 frame:SetScript("OnEvent", function(_, event, ...)
     if event == "TRADE_SHOW" then
         Trade:OnTradeShow()
@@ -57,5 +69,3 @@ frame:SetScript("OnEvent", function(_, event, ...)
         Trade:OnTradeAcceptUpdate(...)
     end
 end)
-
-RaidBetMaster.Trade = Trade
