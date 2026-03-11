@@ -1,17 +1,17 @@
 ## Interface: 11403
 ## Title: Raid Bet Master
-## Notes: Classic Raid Betting AddOn
-## Version: 1.0.0
-## Author: jerry
+## Notes: Raid betting tracker
+## Author: Jerry
+## Version: 1.0
 ## SavedVariables: RaidBetMasterDB
 
 Core.lua
-UI.lua
-Bets.lua
-Session.lua
-Loot.lua
-Trade.lua
-GoldTracker.lua
-History.lua
 Config.lua
 Disclaimer.lua
+Session.lua
+GoldTracker.lua
+Bets.lua
+Trade.lua
+Loot.lua
+History.lua
+UI.lua
