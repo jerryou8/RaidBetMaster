@@ -1,12 +1,10 @@
 -- UI.lua
-
 local RBM = RaidBetMaster
-RBM.UI = {}
+RBM.UI = RBM.UI or {}
 local UI = RBM.UI
 
 UI.frames = {}
 
--- 显示主界面
 function UI:ShowMainFrame()
     if self.frames.main then
         self.frames.main:Show()
@@ -22,7 +20,6 @@ function UI:ShowMainFrame()
     f:SetScript("OnDragStart", f.StartMoving)
     f:SetScript("OnDragStop", f.StopMovingOrSizing)
 
-    -- 标题
     f.title = f:CreateFontString(nil, "OVERLAY")
     f.title:SetFontObject("GameFontHighlight")
     f.title:SetPoint("TOP", f, "TOP", 0, -10)
@@ -33,15 +30,12 @@ function UI:ShowMainFrame()
     f.betList:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -40)
     f.betList:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -10, 40)
 
-    -- 滚动区域
     f.scrollFrame = CreateFrame("ScrollFrame", nil, f.betList, "UIPanelScrollFrameTemplate")
     f.scrollFrame:SetAllPoints(f.betList)
 
     f.content = CreateFrame("Frame", nil, f.scrollFrame)
     f.content:SetSize(360, 500)
     f.scrollFrame:SetScrollChild(f.content)
-
-    -- 初始化行表
     f.content.rows = {}
 
     self.frames.main = f
@@ -54,7 +48,6 @@ function UI:ShowMainFrame()
     end)
 end
 
--- 更新下注列表
 function UI:UpdateBetList()
     local f = self.frames.main
     if not f or not RBM.Bets then return end
@@ -89,6 +82,5 @@ function UI:UpdateBetList()
         end
     end
 
-    -- 调整内容高度以适应滚动
     f.content:SetHeight(math.max(500, -y))
 end
