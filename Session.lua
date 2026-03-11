@@ -1,25 +1,39 @@
-Session = {}
+-- Session.lua
+
+local RBM = RaidBetMaster
+RBM.Session = {}
+local Session = RBM.Session
+
 Session.activeSession = nil
 
+-- 开始副本/Session
 function Session:Start(instanceName, startGold)
+    if not RBM.db then RBM.db = {} end
+
     self.activeSession = {
-        instance = instanceName,
-        startGold = startGold,
+        instance = instanceName or "Unknown",
+        startGold = startGold or 0,
         bets = {},
         startTime = time()
     }
 end
 
+-- 结束副本/Session
 function Session:End(endGold)
     if not self.activeSession then return end
-    self.activeSession.endGold = endGold
-    if not RaidBetMasterDB.sessions then
-        RaidBetMasterDB.sessions = {}
+
+    self.activeSession.endGold = endGold or 0
+
+    if not RBM.db.sessions then
+        RBM.db.sessions = {}
     end
-    table.insert(RaidBetMasterDB.sessions, self.activeSession)
+
+    table.insert(RBM.db.sessions, self.activeSession)
     self.activeSession = nil
 end
 
+-- 事件处理占位
 function Session:HandleEvent(event, ...)
-    -- 这里可以添加事件处理逻辑
+    -- 可以扩展事件处理逻辑，比如：
+    -- PLAYER_ENTERING_WORLD / LOOT_OPENED / CHAT_MSG_SYSTEM 等
 end
